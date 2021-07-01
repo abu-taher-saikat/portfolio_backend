@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   "/",
-  checkAuth,
+  
   uploadMulter.single("projectImage"),
   ProjectController.addProject
 );
