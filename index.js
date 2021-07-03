@@ -12,7 +12,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 
 const app = express();
-app.use(cors());
+app.use(cors({origin : process.env.CLIENT_URL}));
 app.use(bodyParser.json());
 
 app.use("/educations", educationRoutes);
