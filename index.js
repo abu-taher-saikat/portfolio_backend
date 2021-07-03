@@ -31,6 +31,13 @@ app.get('/check',(req,res)=>{
   })
 })
 
+app.post('/postcheck',(req,res)=>{
+  const getit = req.body.name;
+  res.status(200).json({
+    setit : getit
+  })
+})
+
 const port = process.env.PORT || 5000;
 app.listen(port, () =>
   console.log(`server is running in port ${process.env.PORT}`)
