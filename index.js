@@ -24,6 +24,7 @@ app.use("/skills", skillRoutes);
 app.use("/users", userRoutes);
 app.use("/messages", messageRoutes);
 
+app.use(express.static('uploads'));
 app.use("/uploads", express.static("uploads"));
 
 app.get('/check',(req,res)=>{
