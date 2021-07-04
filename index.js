@@ -44,7 +44,7 @@ app.listen(port, () =>
 );
 
 mongoose
-  .connect(process.env.DATA_BASE_CONNECTION, {
+  .connect("mongodb+srv://saikat:saikat1095@cluster0.htwdq.mongodb.net/done_with_portfolio", {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   })
