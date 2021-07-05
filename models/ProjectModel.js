@@ -7,7 +7,7 @@ const projectSchema = mongoose.Schema({
   technologies: { type: String, required: true },
   haveLink: { type: Boolean, required: true },
   link: { type: String },
-  projectImage: { type: String, required: false },
+  projectImage: { type: Array, required: false },
 });
 
 module.exports = mongoose.model("Project", projectSchema);

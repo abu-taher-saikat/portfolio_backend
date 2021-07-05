@@ -1,5 +1,14 @@
 const Project = require("../models/ProjectModel");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary");
+const {CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET} = process.env;
+// console.log(`CLOUD_API_KEY`, process.env.CLOUD_API_KEY)
+
+cloudinary.v2.config({
+  cloud_name : "codebysaikat",
+  api_key : 836716512294595,
+  api_secret : "_uqK2Rsh5d01LxDRxaMRqtmT6L4"
+})
 
 const getOneProject = async (req, res, next) => {
   const id = req.params.projectId;
@@ -20,25 +29,48 @@ const getAllProjects = async (req, res, next) => {
   }
 };
 
-const addProject = async (req, res, next) => {
-  console.log(req.file);
-  const project = new Project({
-    _id: new mongoose.Types.ObjectId(),
-    title: req.body.title,
-    description: req.body.description,
-    technologies: req.body.technologies,
-    haveLink: req.body.haveLink,
-    link: req.body.link,
-    projectImage: req.file.path,
-  });
 
-  try {
+
+
+const addProject = async (req, res, next) => {
+  // console.log(req.files);
+  let pictureFiles = req.files;
+  if(!pictureFiles){
+    return res.status(400).json({message : "No picture attached! "});
+  }
+
+  try{
+
+    let multiplePicturePromise = pictureFiles.map((picture) =>
+      cloudinary.v2.uploader.upload(picture.path)
+    );
+    let imageResponses = await Promise.all(multiplePicturePromise);
+    console.log(`imageResponses`, imageResponses)
+    // res.status(200).json({ images: imageResponses });
+    const project = new Project({
+      _id: new mongoose.Types.ObjectId(),
+      title: req.body.title,
+      description: req.body.description,
+      technologies: req.body.technologies,
+      haveLink: req.body.haveLink,
+      link: req.body.link,
+      // projectImage: req.file.path,
+      projectImage: imageResponses,
+    });
+    console.log(`project`, project)
+
+
     await project.save();
     res.status(201).json(project);
   } catch (err) {
     res.status(500).json({ error: err });
   }
 };
+
+
+
+
+
 
 const deleteProject = async (req, res, next) => {
   const id = req.params.projectId;
