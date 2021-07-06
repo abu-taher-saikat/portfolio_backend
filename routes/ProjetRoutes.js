@@ -12,10 +12,16 @@ const router = express.Router();
 //   uploadMulter.single("projectImage"),
 //   ProjectController.addProject
 // );
+// router.post(
+//   "/",
+  
+//   uploadMulter.array("projectImage",10),
+//   ProjectController.addProject
+// );
 router.post(
   "/",
   
-  uploadMulter.array("projectImage",10),
+  uploadMulter.single("projectImage"),
   ProjectController.addProject
 );
 router.get("/:projectId", ProjectController.getOneProject);
