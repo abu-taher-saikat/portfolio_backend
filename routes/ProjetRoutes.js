@@ -21,9 +21,10 @@ const router = express.Router();
 router.post(
   "/",
   
-  uploadMulter.single("projectImage"),
+  uploadMulter.array("projectImage",10),
   ProjectController.addProject
 );
+
 router.get("/:projectId", ProjectController.getOneProject);
 router.get("/", ProjectController.getAllProjects);
 router.delete("/:projectId",ProjectController.deleteProject);
