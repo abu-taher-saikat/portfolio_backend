@@ -33,12 +33,12 @@ app.get('/check',(req,res)=>{
   })
 })
 
-app.post('/postcheck',(req,res)=>{
-  const getit = req.body.name;
-  res.status(200).json({
-    setit : getit
-  })
-})
+// app.post('/postcheck',(req,res)=>{
+//   const getit = req.body.name;
+//   res.status(200).json({
+//     setit : getit
+//   })
+// })
 
 const port = process.env.PORT || 5000;
 app.listen(port, () =>
@@ -47,8 +47,10 @@ app.listen(port, () =>
 
 mongoose
   .connect("mongodb+srv://saikat:saikat1095@cluster0.htwdq.mongodb.net/done_with_portfolio", {
-    useUnifiedTopology: true,
     useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: true,
   })
   .then(() => console.log("connected to db"))
   .catch((err) => console.error(err));
