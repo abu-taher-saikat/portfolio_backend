@@ -13,6 +13,8 @@ const getOneUser = async (req, res, next) => {
   }
 };
 
+
+// sing up route.
 const signup = async (req, res, next) => {
   try {
     const searchUser = await User.find({ email: req.body.email });

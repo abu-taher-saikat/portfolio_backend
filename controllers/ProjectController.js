@@ -35,6 +35,7 @@ const getAllProjects = async (req, res, next) => {
 const addProject = async (req, res, next) => {
   // console.log(req.files);
   let pictureFiles = req.files;
+  console.log(pictureFiles);
   if(!pictureFiles){
     return res.status(400).json({message : "No picture attached! "});
   }

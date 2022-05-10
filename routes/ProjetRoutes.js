@@ -19,9 +19,7 @@ const router = express.Router();
 //   ProjectController.addProject
 // );
 router.post(
-  "/",
-  
-  uploadMulter.array("projectImage",10),
+  "/", uploadMulter.array("projectImage",10),
   ProjectController.addProject
 );
 
