@@ -11,14 +11,6 @@ cloudinary.v2.config({
 })
 
 
-exports.getAllProjects = async (req, res, next) => {
-  try {
-    const projects = await Project.find({});
-    res.status(200).json(projects);
-  } catch (error) {
-    res.status(500).json({ error: err });
-  }
-};
 
 
 
@@ -71,7 +63,7 @@ exports.deleteProject = async (req, res, next) => {
 
 // Get A Project
 // @@ EndPoint : /customerProject/:projectId
-// @@ Method : POST
+// @@ Method : GET
 // @@ Public
 exports.getAProject = async (req, res, next) => {
   
@@ -96,14 +88,14 @@ exports.updateProject = async (req, res, next) => {
     obj.projectUpdatedDate = new Date();
     obj.projectUpdatedBy = req.userData.userId;
     console.log(req.userData);
-
   }
+
   try {
     let project = await CustomerProject.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
-    // await project.save();
+
     res.status(200).json(project);
   } catch (err) {
     res.status(500).json({ error: err });
