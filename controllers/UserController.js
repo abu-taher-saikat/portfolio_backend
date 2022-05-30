@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const getOneUser = async (req, res, next) => {
+
+
+// Get One User
+// @@ EndPoint : localhost:5000/users/signup
+// @@ Method : GET
+// @@ Public
+exports.getOneUser = async (req, res, next) => {
   const id = req.params.userId;
   try {
     const user = await User.findById(id).select("name email");
@@ -15,7 +21,10 @@ const getOneUser = async (req, res, next) => {
 
 
 // sing up route.
-const signup = async (req, res, next) => {
+// @@ EndPoint : localhost:5000/users/signup
+// @@ Method : POST
+// @@ Public
+exports.signup = async (req, res, next) => {
   try {
     const searchUser = await User.find({ email: req.body.email });
     if (searchUser.length >= 1) {
@@ -49,7 +58,14 @@ const signup = async (req, res, next) => {
   });
 };
 
-const login = async (req, res, next) => {
+
+
+
+// login route.
+// @@ EndPoint : localhost:5000/users/signup
+// @@ Method : POST
+// @@ Public
+exports.login = async (req, res, next) => {
   try {
     const user = await User.find({ email: req.body.email });
     if (user.length < 1) {
@@ -88,4 +104,3 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { getOneUser, signup, login };

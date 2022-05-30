@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const projetRoutes = require("./routes/ProjetRoutes");
 const userRoutes = require("./routes/UserRoutes");
+const customerProjectRoutes = require("./routes/CustomerProjectRoutes");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
@@ -15,6 +16,7 @@ app.use(express.json({extended: false}));
 
 app.use("/projects", projetRoutes);
 app.use("/users", userRoutes);
+app.use("/customerProject", customerProjectRoutes);
 
 app.use(express.static('uploads'));
 app.use("/uploads", express.static("uploads"));
