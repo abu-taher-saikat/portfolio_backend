@@ -10,15 +10,6 @@ cloudinary.v2.config({
   api_secret : "_uqK2Rsh5d01LxDRxaMRqtmT6L4"
 })
 
-exports.getOneProject = async (req, res, next) => {
-  const id = req.params.projectId;
-  try {
-    const project = await Project.findById(id);
-    res.status(200).json(project);
-  } catch (err) {
-    res.status(500).json({ error: err });
-  }
-};
 
 exports.getAllProjects = async (req, res, next) => {
   try {
@@ -78,44 +69,43 @@ exports.deleteProject = async (req, res, next) => {
 };
 
 
-
-
-const updateProject = async (req, res, next) => {
+// Get A Project
+// @@ EndPoint : /customerProject/:projectId
+// @@ Method : POST
+// @@ Public
+exports.getAProject = async (req, res, next) => {
+  
   const id = req.params.projectId;
-   var projectSearch;
   try {
-    projectSearch = await Project.findById(id);
+    const project = await CustomerProject.findById(id);
+    res.status(200).json(project);
   } catch (err) {
     res.status(500).json({ error: err });
   }
-  var filePath;
-  if (req.file === undefined) {
-    filePath = projectSearch.projectImage;
-  } else {
-    filePath = req.file.path;
-  }
-
-  mongoose.set("useFindAndModify", false);
-  Project.findByIdAndUpdate(
-    id,
-    {
-      title: req.body.title,
-      description: req.body.description,
-      technologies: req.body.technologies,
-      haveLink: req.body.haveLink,
-      link: req.body.link,
-      projectImage: filePath,
-    },
-    { new: true },
-    function (err, project) {
-      if (err) {
-        res.status(500).json({ error: err });
-      } else {
-        res
-          .status(200)
-          .json({ message: "Project updated successfully", project });
-      }
-    }
-  );
 };
 
+// Update A Project
+// @@ EndPoint : /customerProject/update/:projectId
+// @@ Method : POST
+// @@ Private
+exports.updateProject = async (req, res, next) => {
+  const id = req.params.projectId;
+  let obj = req.body;
+
+  if(req.body.projectUpdatedDate == null && req.body.projectUpdatedBy == null){
+    obj.projectUpdatedDate = new Date();
+    obj.projectUpdatedBy = req.userData.userId;
+    console.log(req.userData);
+
+  }
+  try {
+    let project = await CustomerProject.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    // await project.save();
+    res.status(200).json(project);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+}
