@@ -1,14 +1,31 @@
 const mongoose = require("mongoose");
+const CustomerProject = require("./CustomerProjectModel.js");
+
+const innerArraySchema = mongoose.Schema({
+    milestoneName : { type: String, required: true },  // required true
+    upperArrayValue : {type : Number , required: true}, // required true
+    milestoneStatus : { type: String, enum: ["In Progress", "Completed" , "Not Started"], default: "Not Started" }
+},{
+    _id : false
+})
+const upperArraySchema = mongoose.Schema({
+    name : { type: String, required: true }, // required true
+    description : { type: String, required: false },
+    number : { type: Number, required: true }, // required true
+},{
+    _id : false
+})
+
+
 
 const milestoneSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-
     // general details
-    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "CustomerProject" , required: true}, // required true
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "customerProject" , required: true}, // required true
     name: { type: String, required: true }, // required true
     description: { type: String, required: false },
     date: { type: Date, default: Date.now },
-    status: { type: String, enum: ["In Progress", "Completed"], default: "In Progress" },
+    status: { type: String, enum: ["In Progress", "Completed" , "Not Started"], default: "Not Started" },
     comments: { type: String, required: false },
 
     // complete details
@@ -27,18 +44,13 @@ const milestoneSchema = mongoose.Schema({
     count : { type: Number, default: 0 },
 
     // will be the title milestone part names.
-    upperArray : [{
-        name : { type: String, required: true }, // required true
-        description : { type: String, required: false },
-        number : { type: Number, required: true }, // required true
-    }],
+    upperArray : [upperArraySchema],
     // inner array for. each sigle values in mile stone.
-    innerArray : [{
-        milestoneName : { type: String, required: true },  // required true
-        upperArrayValue : {type : Number , required: true}, // required true
-        milestoneStatus : { type: String, enum: ["In Progress", "Completed"], default: "In Progress" },
-    }]
-
+    innerArray : [innerArraySchema]
 });
+
+
+
+
 
 module.exports = mongoose.model("milestone", milestoneSchema);

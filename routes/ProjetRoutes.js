@@ -6,18 +6,6 @@ const checkAuth = require("../middlewares/check-auth");
 
 const router = express.Router();
 
-// router.post(
-//   "/",
-  
-//   uploadMulter.single("projectImage"),
-//   ProjectController.addProject
-// );
-// router.post(
-//   "/",
-  
-//   uploadMulter.array("projectImage",10),
-//   ProjectController.addProject
-// );
 router.post(
   "/", uploadMulter.array("projectImage",10),
   ProjectController.addProject
