@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 // const Project = require("../models/ProjectModel");
 const Milestone = require("../models/Milestone");
+const CustomerProject = require("../models/CustomerProjectModel");
+
 const cloudinary = require("cloudinary");
 const {CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET} = process.env;
 
@@ -17,24 +19,46 @@ cloudinary.v2.config({
 // @@ Method : POST
 // @@ Public
 exports.createMilestone = async (req, res, next) => {
-  console.log(req.body);
-  const {projectId , name,description,status ,comments, upperArray, innerArray } = req.body;
+  const {projectId , name, description, status ,comments, milestone } = req.body;
+
+  // console.log(req.body);
   try{
-    const milestone = new Milestone({
+
+    // if there is no project id.
+    if(!projectId){
+      return res.status(400).json({
+        message: "Project Id is required"
+      });
+    }
+
+    // find if this project id already have a milestone.
+    // const project = await Milestone.findOne({projectId: projectId});
+    // if(project){
+    //   return res.status(400).json({
+    //     message: "Project already have a milestone"
+    //   });
+    // }
+
+    // create the milestone.
+    const setMilestone = new Milestone({
       _id: new mongoose.Types.ObjectId(),
       projectId ,
       name,
       description,
       status,
       comments,
-      upperArray,
-      innerArray
+      milestone
     });
 
-    await milestone.save();
+    // set the milestone id to the customer project model.
+    const customerProject = await CustomerProject.findOneAndUpdate({_id: projectId}, {projectMilestone: setMilestone._id}, {new: true});
 
-    res.status(201).json(milestone);
+    console.log(customerProject);
+    await setMilestone.save();
+
+    res.status(201).json(setMilestone);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: err });
   }
 };
