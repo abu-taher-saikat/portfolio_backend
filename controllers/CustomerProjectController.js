@@ -22,7 +22,6 @@ exports.createProject = async (req, res, next) => {
   console.log(req.body);
   const {projectName,projectDescription,projectTechnologies,clientDetails ,projectType, projectComments, projectAssignedTo, projectAssignedBy } = req.body;
   try{
-
     const project = new CustomerProject({
       _id: new mongoose.Types.ObjectId(),
       projectName : projectName,
@@ -46,11 +45,43 @@ exports.createProject = async (req, res, next) => {
 
 
 // imageUpload
-// @@ EndPoint : /customerProject/create
+// @@ EndPoint : /customerProject/imageUpload
 // @@ Method : POST
 // @@ Public
 exports.imageUpload = async (req, res, next) => {
-  
+  let pictureFiles = req.files;
+  if(!pictureFiles){
+    return res.status(400).json({message : "No picture attached! "});
+  }
+
+  try{
+    let multiplePicturePromise = pictureFiles.map((picture) =>
+      cloudinary.v2.uploader.upload(picture.path)
+    );
+    let imageResponses = await Promise.all(multiplePicturePromise);
+    // console.log(`imageResponses`, imageResponses)
+
+    console.log(req.body.projectId);
+
+    let project = await CustomerProject.findByIdAndUpdate(req.body.projectId, {
+      projectImage: imageResponses 
+    }, {
+      new: true,
+      runValidators: true,
+      });
+
+      if(!project){
+        return res.status(404).json({message : "Project not found!"});
+      }
+    console.log(`project`, project)
+
+
+    // await project.save();
+    res.status(201).json(project);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
 
 
