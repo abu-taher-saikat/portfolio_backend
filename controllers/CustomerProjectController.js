@@ -127,8 +127,7 @@ exports.updateProject = async (req, res, next) => {
 
   if(req.body.projectUpdatedDate == null && req.body.projectUpdatedBy == null){
     obj.projectUpdatedDate = new Date();
-    obj.projectUpdatedBy = req.userData.userId;
-    console.log(req.userData);
+    obj.projectUpdatedBy = req.user.id;
   }
 
   try {
@@ -142,3 +141,5 @@ exports.updateProject = async (req, res, next) => {
     res.status(500).json({ error: err });
   }
 }
+
+

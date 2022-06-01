@@ -106,7 +106,7 @@ exports.updateMilestone = async (req, res, next) => {
 
   if(req.body.updatedBy == null && req.body.updatedDate == null){
     obj.updatedDate = new Date();
-    obj.projectUpdatedBy = req.userData.userId;
+    obj.projectUpdatedBy = req.user.id;
   }
 
 

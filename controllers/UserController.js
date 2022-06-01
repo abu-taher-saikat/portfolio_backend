@@ -131,8 +131,8 @@ exports.login = async (req, res, next) => {
 // @@ Public
 exports.updatePassword = async (req, res, next) => {
   try {
-    console.log(req.userData.id);
-    const user = await User.findById(req.userData.id).select('+password');
+    console.log(req.user.id);
+    const user = await User.findById(req.user.id).select('+password');
 
     console.log('user is', user);
 
@@ -237,3 +237,18 @@ exports.resetPassword = async (req, res, next) => {
   await user.save();
   sendTokenResponse(user, 200, res);
 }
+
+
+
+
+// @desc   Get current logged in user
+// @route  POST /api/v1/auth/me
+// @access Private
+exports.getMe = async(req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+      success: true,
+      data: user
+  })
+};
