@@ -32,12 +32,12 @@ exports.createMilestone = async (req, res, next) => {
     }
 
     // find if this project id already have a milestone.
-    // const project = await Milestone.findOne({projectId: projectId});
-    // if(project){
-    //   return res.status(400).json({
-    //     message: "Project already have a milestone"
-    //   });
-    // }
+    const project = await Milestone.findOne({projectId: projectId});
+    if(project){
+      return res.status(400).json({
+        message: "Project already have a milestone"
+      });
+    }
 
     // create the milestone.
     const setMilestone = new Milestone({

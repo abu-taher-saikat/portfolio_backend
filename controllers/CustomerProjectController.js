@@ -45,6 +45,16 @@ exports.createProject = async (req, res, next) => {
 
 
 
+// imageUpload
+// @@ EndPoint : /customerProject/create
+// @@ Method : POST
+// @@ Public
+exports.imageUpload = async (req, res, next) => {
+  
+};
+
+
+
 
 // Delete Project
 // @@ EndPoint : /customerProject/delete/:id
