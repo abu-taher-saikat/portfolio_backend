@@ -1,6 +1,5 @@
 const User = require("../models/UserModel");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
@@ -24,41 +23,54 @@ exports.getOneUser = async (req, res, next) => {
 // @@ EndPoint : localhost:5000/users/signup
 // @@ Method : POST
 // @@ Public
-exports.signup = async (req, res, next) => {
-  try {
+exports.register = async (req, res, next) => {
     const searchUser = await User.find({ email: req.body.email });
-    if (searchUser.length >= 1) {
+
+    if (searchUser) {
       return res.status(409).json({
         message: "this email exist",
       });
     }
-  } catch (error) {
-    res.status(500).json({ error: err });
-  }
 
-  bcrypt.hash(req.body.password, 10, async (err, hash) => {
-    if (err) {
-      return res.status(500).json({
-        error: err,
-      });
-    } else {
-      const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        email: req.body.email,
-        password: hash,
-      });
-      try {
-        await user.save();
-        res.status(201).json({ message: "created user" });
-      } catch (err) {
-        res.status(500).json({ error: err });
-      }
-    }
-  });
+    const {
+      name,
+      email,
+      password,
+      role
+  } = req.body;
+
+  // Create user
+  const user = await User.create({
+      name,
+      email,
+      password,
+      role
+  })
+
+  sendTokenResponse(user, 200, res);
 };
 
 
+// Get token from model, create cookie and send response
+const sendTokenResponse = (user, statusCode, res) => {
+  // Create token
+  const token = user.getSignedJwtToken();
+
+  const options = {
+      expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+      httpOnly: true
+  }
+  if (process.env.NODE_ENV === 'production') {
+      options.secure = true
+  }
+
+  res.status(statusCode)
+      .cookie('token', token, options)
+      .json({
+          success: true,
+          token
+      })
+}
 
 
 // login route.
@@ -67,38 +79,69 @@ exports.signup = async (req, res, next) => {
 // @@ Public
 exports.login = async (req, res, next) => {
   try {
-    const user = await User.find({ email: req.body.email });
-    if (user.length < 1) {
-      return res.status(401).json({
-        message: "Auth failed",
+    const {email , password} = req.body;
+    
+    // Validate email & password
+    if (!email || !password) {
+      return res.status(400).json({
+        success : false,
+        message: "Please fill all the fields",
       });
     }
-    bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-      if (err) {
-        return res.status(401).json({
-          message: "Auth failed",
-        });
-      }
-      if (result) {
-        const token = jwt.sign(
-          {
-            email: user[0].email,
-            userId: user[0]._id,
-          },
-          process.env.TOKEN_SECRET /* ,
-          {
-            expiresIn: "1h",
-          } */
-        );
-        return res.status(200).json({
-          message: "Auth successful",
-          token: token,
-        });
-      }
-      res.status(401).json({
-        message: "Auth failed",
+
+    //Check for user
+    const user = await User.findOne({
+        email: email
+    }).select('+password');
+  
+    // if no user
+    if (!user) {
+      return res.status(400).json({
+        success : false,
+        message: "User not found with this email",
       });
-    });
+    }
+  
+    // check if password matches
+    const isMatch = await user.matchPassword(password);
+  
+    if (!isMatch) {
+      return res.status(400).json({
+        success : false,
+        message: "Password is incorrect",
+      });
+    }
+
+    sendTokenResponse(user, 200, res);
+
+  } catch (error) {
+    res.status(500).json({ error: err });
+  }
+};
+
+
+
+
+// login route.
+// @@ EndPoint : localhost:5000/users/forgetPassword
+// @@ Method : POST
+// @@ Public
+exports.forgetPassword = async (req, res, next) => {
+  try {
+    const user = await User.find({ email: req.body.email });
+    if (!user) {
+      return res.status(401).json({
+        type : "error",
+        message: "User not found",
+      });
+    }
+
+    const token = jwt.sign({
+        email: user[0].email,
+        userId: user[0]._id,
+      },process.env.TOKEN_SECRET)
+
+
   } catch (error) {
     res.status(500).json({ error: err });
   }
